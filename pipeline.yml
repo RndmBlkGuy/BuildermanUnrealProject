@@ -24,21 +24,21 @@ stages:
       displayName: Build Game Module
 
     - script: 'RunUAT BuildCookRun -project="$(Build.SourcesDirectory)/Game/Game.uproject" -noP4 -clientconfig=Shipping -serverconfig=Shipping -utf8output -platform=Win64 -targetplatform=Win64 -build -cook -map=Transition+TestWorld+Lobby+MainMenu -unversionedcookedcontent -pak -distribution -compressed -prereqs -stage -package -stagingdirectory="$(Build.SourcesDirectory)/Game/Saved/StagedBuilds/" -cmdline=" -Messaging" -compile'
-          displayName: Package Client
-          failOnStderr: true
-          workingDirectory: '"$(UNREAL_ENGINE_PATH)/Build/BatchFiles"'
+      displayName: Package Client
+      failOnStderr: true
+      workingDirectory: '"$(UNREAL_ENGINE_PATH)/Build/BatchFiles"'
 
-- task: ArchiveFiles@2
+    - task: ArchiveFiles@2
       displayName: Archive Client Package
       inputs:
         rootFolderOrFile: '$(Build.SourcesDirectory)/Game/Saved/StagedBuilds/WindowsNoEditor'
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/$(projectName)Client.zip'
         
-- task: AzureCLI@2
-  displayName: Publish Client to Azure Blob Storage
-  inputs:
-    azureSubscription: builderman-scn
-    scriptType: pscore
-    scriptLocation: inlineScript
-    inlineScript: az storage blob upload --file "$(Build.ArtifactStagingDirectory)/$(projectName)Client.zip" --account-name unrealstorageaccount --container-name unrealblobstorage --name game-client-$(Build.BuildId).zip
+    - task: AzureCLI@2
+      displayName: Publish Client to Azure Blob Storage
+      inputs:
+        azureSubscription: builderman-scn
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: az storage blob upload --file "$(Build.ArtifactStagingDirectory)/$(projectName)Client.zip" --account-name unrealstorageaccount --container-name unrealblobstorage --name game-client-$(Build.BuildId).zip
