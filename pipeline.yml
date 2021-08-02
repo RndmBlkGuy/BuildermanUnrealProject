@@ -9,6 +9,8 @@ pool:
   demands:
   - UNREAL_ENGINE_VERSION -equals 4.26.2
 
+variables: 
+
 stages:
 - stage: build
   displayName: Build
@@ -16,9 +18,9 @@ stages:
   - job: build
     displayName: Build & Package
     steps:
-    - script: '"$(UNREAL_ENGINE_PATH)/Binaries/DotNET/UnrealBuildTool.exe" -projectfiles $(Build.SourcesDirectory)/Game/Game.uproject -game -rocket -progress'
+    - script: '"$(UNREAL_ENGINE_PATH)/Binaries/DotNET/UnrealBuildTool.exe" -projectfiles $(Build.SourcesDirectory)/testbuildproject.uproject -game -rocket -progress'
       displayName: Generate Project Files
-    - script: '"$(UNREAL_ENGINE_PATH)/Binaries/DotNET/UnrealBuildTool.exe" Shipping Win64 -Project="$(Build.SourcesDirectory)/Game/Game.uproject" -TargetType=Editor -Progress -NoEngineChanges -NoHotReloadFromIDE'
+    - script: '"$(UNREAL_ENGINE_PATH)/Binaries/DotNET/UnrealBuildTool.exe" Shipping Win64 -Project="$(Build.SourcesDirectory)/testbuildproject.uproject" -TargetType=Editor -Progress -NoEngineChanges -NoHotReloadFromIDE'
       displayName: Build Game Module
 
 - script: 'RunUAT BuildCookRun -project="$(Build.SourcesDirectory)/Game/Game.uproject" -noP4 -clientconfig=Shipping -serverconfig=Shipping -utf8output -platform=Win64 -targetplatform=Win64 -build -cook -map=Transition+TestWorld+Lobby+MainMenu -unversionedcookedcontent -pak -distribution -compressed -prereqs -stage -package -stagingdirectory="$(Build.SourcesDirectory)/Game/Saved/StagedBuilds/" -cmdline=" -Messaging" -compile'
@@ -36,7 +38,7 @@ stages:
 - task: AzureCLI@2
   displayName: Publish Client to Azure Blob Storage
   inputs:
-    azureSubscription: <Name of the Azure Resource Manager service connection>
+    azureSubscription: builderman-scn
     scriptType: pscore
     scriptLocation: inlineScript
-    inlineScript: az storage blob upload --file "$(Build.ArtifactStagingDirectory)/$(projectName)Client.zip" --account-name mystorageaccount --container-name clientreleases --name game-client-$(Build.BuildId).zip
+    inlineScript: az storage blob upload --file "$(Build.ArtifactStagingDirectory)/$(projectName)Client.zip" --account-name unrealstorageaccount --container-name unrealblobstorage --name game-client-$(Build.BuildId).zip
