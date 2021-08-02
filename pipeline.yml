@@ -1,0 +1,10 @@
+trigger:
+  batch: true
+  brancches:
+    include :
+    - master
+
+pool:
+  name: buildermanpool
+  demands:
+  - UNREAL_ENGINE_VERSION -equals 4.26.2
