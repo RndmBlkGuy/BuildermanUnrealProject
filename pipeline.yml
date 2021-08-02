@@ -9,8 +9,6 @@ pool:
   demands:
   - UNREAL_ENGINE_VERSION -equals 4.26.2
 
-variables: 
-
 stages:
 - stage: build
   displayName: Build
