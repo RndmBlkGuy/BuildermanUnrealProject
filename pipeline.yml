@@ -6,8 +6,7 @@ trigger:
 
 pool:
   name: buildermanpool
-  demands:
-  - UNREAL_ENGINE_VERSION -equals 4.26.2
+
 
 stages:
 - stage: build
