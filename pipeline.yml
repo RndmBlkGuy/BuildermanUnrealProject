@@ -6,8 +6,7 @@ trigger:
 
 pool:
   name: buildermanpool
-  demands:
-  - UNREAL_ENGINE_VERSION -equals 4.26.2
+  
 
 stages:
 - stage: build
@@ -16,6 +15,10 @@ stages:
   - job: build
     displayName: Build & Package
     steps:
+    - script: git clean -ffdx && git reset --hard HEAD
+      displayName: Clean
+      condition: eq('${{ parameters.clean }}', true)
+
     - script: '"$(UNREAL_ENGINE_PATH)/Binaries/DotNET/UnrealBuildTool.exe" -projectfiles $(Build.SourcesDirectory)/testbuildproject.uproject -game -rocket -progress'
       displayName: Generate Project Files
     - script: '"$(UNREAL_ENGINE_PATH)/Binaries/DotNET/UnrealBuildTool.exe" Shipping Win64 -Project="$(Build.SourcesDirectory)/testbuildproject.uproject" -TargetType=Editor -Progress -NoEngineChanges -NoHotReloadFromIDE'
