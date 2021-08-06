@@ -15,12 +15,12 @@ stages:
   - job: build
     displayName: Build & Package
     steps:
-    - script: '"$(UNREAL_ENGINE_PATH)\Binaries\DotNET\UnrealBuildTool.exe" -projectfiles $(Build.SourcesDirectory)\Game\testbuildproject.uproject -game -rocket -progress'
+    - script: '"$(UNREAL_ENGINE_PATH)\Binaries\DotNET\UnrealBuildTool.exe" -projectfiles $(Build.SourcesDirectory)\testbuildproject\testbuildproject.uproject -game -progress'
       displayName: Generate Project Files
-    - script: '"$(UNREAL_ENGINE_PATH)/Binaries/DotNET/UnrealBuildTool.exe" Shipping Win64 -Project="$(Build.SourcesDirectory)/Game/testbuildproject.uproject" -TargetType=Editor -Progress -NoEngineChanges -NoHotReloadFromIDE'
+    - script: '"$(UNREAL_ENGINE_PATH)\Binaries\DotNET\UnrealBuildTool.exe" Shipping Win64 -Project="$(Build.SourcesDirectory)/Game/testbuildproject.uproject" -TargetType=Editor -Progress -NoEngineChanges -NoHotReloadFromIDE'
       displayName: Build Game Module
 
-    - script: 'RunUAT BuildCookRun -project="$(Build.SourcesDirectory)/Game/Game.uproject" -noP4 -clientconfig=Shipping -serverconfig=Shipping -utf8output -platform=Win64 -targetplatform=Win64 -build -cook -map=FirstPersonExampleMap.umap -unversionedcookedcontent -pak -distribution -compressed -prereqs -stage -package -stagingdirectory="$(Build.SourcesDirectory)/Game/Saved/StagedBuilds/" -cmdline=" -Messaging" -compile'
+    - script: 'RunUAT BuildCookRun -project="$(Build.SourcesDirectory)/Game/Game.uproject" -noP4 -clientconfig=Shipping -serverconfig=Shipping -utf8output -platform=Win64 -targetplatform=Win64 -build -cook -map=FirstPersonExampleMap.umap -unversionedcookedcontent -pak -distribution -compressed -prereqs -stage -package -stagingdirectory="$(Build.SourcesDirectory)/Game/Saved/StagedBuilds/" -cmdline=" -Messaging" -compile -iterate'
       displayName: Package Client
       failOnStderr: true
       workingDirectory: '"$(UNREAL_ENGINE_PATH)/Build/BatchFiles"'
