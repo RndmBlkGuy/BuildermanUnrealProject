@@ -15,12 +15,12 @@ stages:
   - job: build
     displayName: Build & Package
     steps:
-    - script: '"$(UNREAL_ENGINE_PATH)\Binaries\DotNET\UnrealBuildTool.exe" -projectfiles $(Build.SourcesDirectory)\testbuildproject.uproject -game -progress'
-      displayName: Generate Project Files
+    #- script: '"$(UNREAL_ENGINE_PATH)\Binaries\DotNET\UnrealBuildTool.exe" -projectfiles $(Build.SourcesDirectory)\testbuildproject.uproject -game -progress'
+    #  displayName: Generate Project Files
     - script: '"$(UNREAL_ENGINE_PATH)\Binaries\DotNET\UnrealBuildTool.exe" Shipping Win64 -Project="$(Build.SourcesDirectory)\testbuildproject.uproject" -TargetType=Editor -Progress -NoEngineChanges -NoHotReloadFromIDE'
       displayName: Build Game Module
 
-    - script: 'RunUAT BuildCookRun -project="$(Build.SourcesDirectory)/Game/Game.uproject" -noP4 -clientconfig=Shipping -serverconfig=Shipping -utf8output -platform=Win64 -targetplatform=Win64 -build -cook -map=FirstPersonExampleMap.umap -unversionedcookedcontent -pak -distribution -compressed -prereqs -stage -package -stagingdirectory="$(Build.SourcesDirectory)/Game/Saved/StagedBuilds/" -cmdline=" -Messaging" -compile -iterate'
+    - script: 'RunUAT BuildCookRun -project="$(Build.SourcesDirectory)\testbuildproject.uproject" -noP4 -clientconfig=Shipping -serverconfig=Shipping -utf8output -platform=Win64 -targetplatform=Win64 -build -cook -map=FirstPersonExampleMap.umap -unversionedcookedcontent -pak -distribution -compressed -prereqs -stage -package -stagingdirectory="$(Build.SourcesDirectory)/Game/Saved/StagedBuilds/" -cmdline=" -Messaging" -compile -iterate'
       displayName: Package Client
       failOnStderr: true
       workingDirectory: '"$(UNREAL_ENGINE_PATH)/Build/BatchFiles"'
@@ -28,9 +28,9 @@ stages:
     - task: ArchiveFiles@2
       displayName: Archive Client Package
       inputs:
-        rootFolderOrFile: '$(Build.SourcesDirectory)/Game/Saved/StagedBuilds/WindowsNoEditor'
+        rootFolderOrFile: '$(Build.SourcesDirectory)\Saved\StagedBuilds\WindowsNoEditor'
         archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(projectName)Client.zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)\$(projectName)Client.zip'
         
     - task: AzureCLI@2
       displayName: Publish Client to Azure Blob Storage
@@ -38,4 +38,4 @@ stages:
         azureSubscription: builderman-scn
         scriptType: pscore
         scriptLocation: inlineScript
-        inlineScript: az storage blob upload --file "$(Build.ArtifactStagingDirectory)/$(projectName)Client.zip" --account-name unrealstorageaccount --container-name unrealblobstorage --name game-client-$(Build.BuildId).zip
+        inlineScript: az storage blob upload --file "$(Build.ArtifactStagingDirectory)\$(projectName)Client.zip" --account-name unrealstorageaccount --container-name unrealblobstorage --name game-client-$(Build.BuildId).zip
